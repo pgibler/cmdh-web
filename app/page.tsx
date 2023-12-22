@@ -24,7 +24,7 @@ const firestore = firebase.firestore();
 const auth = firebase.auth();
 
 // Optional: If using Firestore emulator
-if (window.location.hostname === 'localhost') {
+if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
   auth.useEmulator('http://localhost:9099/');
   firestore.useEmulator('localhost', 8080); // Replace with your Firestore emulator port
 }
