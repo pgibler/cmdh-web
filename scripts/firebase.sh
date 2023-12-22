@@ -1,0 +1,1 @@
+firebase emulators:start --project logline-ai --import ./.logline/firebase --export-on-exit
