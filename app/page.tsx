@@ -21,26 +21,22 @@ firebase.initializeApp(firebaseConfig);
 
 // After initializing Firebase
 const firestore = firebase.firestore();
+const auth = firebase.auth();
 
 // Optional: If using Firestore emulator
 if (window.location.hostname === 'localhost') {
-  firestore.useEmulator('localhost', 8080); // Replace with your Firestore emulator port
-}
-
-const auth = firebase.auth();
-
-if (window.location.hostname === 'localhost') {
   auth.useEmulator('http://localhost:9099/');
+  firestore.useEmulator('localhost', 8080); // Replace with your Firestore emulator port
 }
 
 const LandingPage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [apiKey, setApiKey] = useState<string>('');
-  const [idToken, setIdToken] = useState<string>('');
 
   const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider).then((result) => {
+      console.log('Signed in with Google:', result.user.uid);
       setUser(result.user);
     }).catch((error) => {
       console.error('Error signing in with Google:', error);
@@ -50,6 +46,7 @@ const LandingPage: React.FC = () => {
   const signInWithGitHub = () => {
     const provider = new GithubAuthProvider();
     signInWithPopup(auth, provider).then((result) => {
+      console.log('Signed in with GitHub:', result.user.uid);
       setUser(result.user);
     }).catch((error) => {
       console.error('Error signing in with GitHub:', error);
@@ -60,12 +57,14 @@ const LandingPage: React.FC = () => {
     if (user) {
       const newApiKey = uuidv4();
       const userRef = firebase.firestore().collection('users').doc(user.uid);
-      userRef.set({ apiKey: newApiKey }, { merge: true }).then(() => {
-        setApiKey(newApiKey);
-        alert('API Key generated and stored!');
-      }).catch((error) => {
-        console.error('Error storing API key:', error);
-      });
+      userRef.set({ apiKey: newApiKey }, { merge: true })
+        .then(() => {
+          setApiKey(newApiKey);
+          console.log('API Key generated and stored:', newApiKey);
+        })
+        .catch((error) => {
+          console.error('Error storing API key:', error);
+        });
     }
   };
 
@@ -90,20 +89,10 @@ const LandingPage: React.FC = () => {
     }
   }, [user]);
 
-
-  useEffect(() => {
-    if (user) {
-      user.getIdToken().then((token) => {
-        setIdToken(token);
-      }).catch((error) => {
-        console.error('Error getting user ID token:', error);
-      });
-    }
-  }, [user]);
-
   const copyToClipboard = () => {
     if (user) {
       navigator.clipboard.writeText(apiKey);
+      alert('API Key copied to clipboard');
     }
   };
 

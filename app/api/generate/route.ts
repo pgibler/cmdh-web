@@ -1,31 +1,34 @@
-import * as admin from 'firebase-admin';
 import { NextResponse } from "next/server";
 import { createCompletion } from "./openai_api";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 
-// Initialize Firebase Admin SDK
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    }),
-    // ... other configurations if needed ...
-  });
+const firebaseConfig = {
+  apiKey: "AIzaSyC5f0QRTbWybRoa3Pr5ooXUECzea4toRGQ",
+  authDomain: "cmdh-ai.firebaseapp.com",
+  projectId: "cmdh-ai",
+  // other config properties
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+// After initializing Firebase
+const firestore = firebase.firestore();
+
+// Optional: If using Firestore emulator
+if (process.env.NODE_ENV === 'development') {
+  firestore.useEmulator('localhost', 8080); // Replace with your Firestore emulator port
 }
 
 export async function POST(request: Request) {
   try {
-    // Extract the API key from request headers
-    const apiKey = request.headers.get('CMDH_API_KEY');
+    const { prompt, system, apiKey } = await request.json();
     if (!apiKey) throw new Error('No API key provided');
 
     // Verify the API key
     // Assume we have a function to validate API key against Firestore
     const isValidApiKey = await validateApiKey(apiKey);
     if (!isValidApiKey) throw new Error('Invalid API key');
-
-    const { prompt, system } = await request.json();
     const text = await createCompletion(prompt, system);
 
     return new NextResponse(JSON.stringify({ text }));
@@ -43,7 +46,7 @@ export async function POST(request: Request) {
 }
 
 async function validateApiKey(apiKey: string) {
-  const usersRef = admin.firestore().collection('users');
+  const usersRef = firestore.collection('users');
   const snapshot = await usersRef.where('apiKey', '==', apiKey).limit(1).get();
 
   if (snapshot.empty) {
