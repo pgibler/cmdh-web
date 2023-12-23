@@ -120,15 +120,17 @@ const LandingPage: React.FC = () => {
                   Generate API Key
                 </button>
                 <div className="mt-4 text-xl text-gray-600">{apiKey && <div>Your API Key: {apiKey}</div>}</div>
-                <button onClick={copyToClipboard} className="mt-2 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-700 relative">
-                  Copy API Key
-                  {copied && (
-                    <FontAwesomeIcon
-                      icon={faCheck}
-                      className="absolute right-2 top-2 text-white opacity-100 animate-fade-out" // Add fade-out animation
-                    />
-                  )}
-                </button>
+                {apiKey && (
+                  <button onClick={copyToClipboard} className="mt-2 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-700 relative">
+                    Copy API Key
+                    {copied && (
+                      <FontAwesomeIcon
+                        icon={faCheck}
+                        className="absolute right-2 top-2 text-white opacity-100 animate-fade-out" // Add fade-out animation
+                      />
+                    )}
+                  </button>
+                )}
               </div>
             </>
           ) : (
