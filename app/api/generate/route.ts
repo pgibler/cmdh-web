@@ -1,8 +1,6 @@
 import OpenAI from 'openai';
 import { validateApiKey } from '../validateApiKey';
 
-const openai = new OpenAI();
-
 export const runtime = 'edge';
 
 export async function POST(request: Request) {
@@ -24,6 +22,7 @@ export async function POST(request: Request) {
 async function buildStream(model: string, prompt: string, system: string) {
   return new ReadableStream({
     async start(controller) {
+      const openai = new OpenAI();
       const encoder = new TextEncoder();
       const stream = await openai.chat.completions.create({
         model: model,
