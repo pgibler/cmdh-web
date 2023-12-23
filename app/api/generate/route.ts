@@ -23,9 +23,8 @@ async function buildStream(model: string, prompt: string, system: string) {
   return new ReadableStream({
     async start(controller) {
       const openai = new OpenAI();
-      const encoder = new TextEncoder();
       const stream = await openai.chat.completions.create({
-        model: model,
+        model,
         messages: [
           { role: 'system', content: system },
           { role: 'user', content: prompt }
@@ -40,7 +39,7 @@ async function buildStream(model: string, prompt: string, system: string) {
           // Assuming chunk is a string or can be converted to string
           const content = chunk.choices[0].delta.content
           if (content) {
-            controller.enqueue(encoder.encode(content));
+            controller.enqueue(content);
           }
         }
         console.timeEnd('OpenAI stream runtime');
