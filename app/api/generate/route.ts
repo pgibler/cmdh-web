@@ -35,6 +35,7 @@ async function buildStream(model: string, prompt: string, system: string) {
       });
 
       try {
+        console.time('OpenAI stream runtime');
         // Collecting data from the stream
         for await (const chunk of stream) {
           // Assuming chunk is a string or can be converted to string
@@ -43,6 +44,7 @@ async function buildStream(model: string, prompt: string, system: string) {
             controller.enqueue(encoder.encode(content));
           }
         }
+        console.timeEnd('OpenAI stream runtime');
         controller.close();
       } catch (e) {
         controller.error(e);
