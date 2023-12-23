@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
+
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
@@ -75,8 +77,6 @@ const LandingPage: React.FC = () => {
         userRef.get().then((doc) => {
           if (doc.exists) {
             setApiKey(doc.data()?.apiKey);
-          } else {
-            alert('No API Key found. Please generate one.');
           }
         }).catch((error) => {
           console.error('Error retrieving API key:', error);
@@ -89,10 +89,13 @@ const LandingPage: React.FC = () => {
     }
   }, [user]);
 
+  const [copied, setCopied] = useState(false);
+
   const copyToClipboard = () => {
-    if (user) {
+    if (apiKey) {
       navigator.clipboard.writeText(apiKey);
-      alert('API Key copied to clipboard');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
     }
   };
 
@@ -117,8 +120,14 @@ const LandingPage: React.FC = () => {
                   Generate API Key
                 </button>
                 <div className="mt-4 text-xl text-gray-600">{apiKey && <div>Your API Key: {apiKey}</div>}</div>
-                <button onClick={copyToClipboard} className="mt-2 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-700">
+                <button onClick={copyToClipboard} className="mt-2 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-700 relative">
                   Copy API Key
+                  {copied && (
+                    <FontAwesomeIcon
+                      icon={faCheck}
+                      className="absolute right-2 top-2 text-white opacity-100 animate-fade-out" // Add fade-out animation
+                    />
+                  )}
                 </button>
               </div>
             </>
