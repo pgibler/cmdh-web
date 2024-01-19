@@ -19,7 +19,8 @@ export async function POST(request: Request) {
   return new Response(stream);
 };
 
-async function buildStream(model: string, prompt: string, system: string) {
+export async function buildStream(model: string, prompt: string, system: string) {
+  const encoder = new TextEncoder();
   return new ReadableStream({
     async start(controller) {
       const openai = new OpenAI();
@@ -39,7 +40,8 @@ async function buildStream(model: string, prompt: string, system: string) {
           // Assuming chunk is a string or can be converted to string
           const content = chunk.choices[0].delta.content
           if (content) {
-            controller.enqueue(content);
+            console.log(content)
+            controller.enqueue(encoder.encode(content));
           }
         }
         console.timeEnd('OpenAI stream runtime');
