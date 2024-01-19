@@ -10,6 +10,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import { GoogleAuthProvider, GithubAuthProvider, signInWithPopup, User } from 'firebase/auth';
 import { v4 as uuidv4 } from 'uuid'; // UUID for API key generation
+import StreamTextCompletion from './StreamTextCompletion';
 
 // Firebase configuration (replace with your actual configuration)
 const firebaseConfig = {
@@ -132,6 +133,11 @@ const LandingPage: React.FC = () => {
                   </button>
                 )}
               </div>
+              {apiKey && (
+                <div className="stream-text-completion-container">
+                  <StreamTextCompletion apiKey={apiKey} />
+                </div>
+              )}
             </>
           ) : (
             <>
@@ -145,6 +151,15 @@ const LandingPage: React.FC = () => {
           )}
         </div>
       </div>
+      <style jsx>{`
+      .stream-text-completion-container {
+        margin-top: 20px; /* Adjust this value as needed for your layout */
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }`}</style>
     </div>
   );
 };
