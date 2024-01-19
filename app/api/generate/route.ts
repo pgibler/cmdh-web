@@ -1,10 +1,11 @@
 import OpenAI from 'openai';
 import { validateApiKey } from '../validateApiKey';
+import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 
 export const runtime = 'edge';
 
 export async function POST(request: Request) {
-  const { apiKey, model, prompt, system } = await request.json();
+  const { apiKey, model, prompt, system = '' } = await request.json();
 
   if (!apiKey) throw new Error('No API key provided');
 
@@ -24,12 +25,16 @@ async function buildStream(model: string, prompt: string, system: string) {
   return new ReadableStream({
     async start(controller) {
       const openai = new OpenAI();
+      const userMessage: ChatCompletionMessageParam = { role: 'user', content: prompt };
+      const messages: ChatCompletionMessageParam[] = system != '' ? [
+        { role: 'system', content: system },
+        userMessage,
+      ] : [
+        userMessage
+      ]
       const stream = await openai.chat.completions.create({
         model,
-        messages: [
-          { role: 'system', content: system },
-          { role: 'user', content: prompt }
-        ],
+        messages,
         stream: true,
       });
 

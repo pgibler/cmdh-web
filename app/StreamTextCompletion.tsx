@@ -37,7 +37,6 @@ const StreamTextCompletion: React.FC<Props> = ({ apiKey }) => {
           apiKey,
           model: 'gpt-3.5-turbo', // or your specific model
           prompt,
-          system: 'Your system message if any'
         }),
       });
 
