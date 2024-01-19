@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   return new Response(stream);
 };
 
-export async function buildStream(model: string, prompt: string, system: string) {
+async function buildStream(model: string, prompt: string, system: string) {
   const encoder = new TextEncoder();
   return new ReadableStream({
     async start(controller) {
