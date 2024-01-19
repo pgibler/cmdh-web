@@ -40,7 +40,6 @@ async function buildStream(model: string, prompt: string, system: string) {
           // Assuming chunk is a string or can be converted to string
           const content = chunk.choices[0].delta.content
           if (content) {
-            console.log(content)
             controller.enqueue(encoder.encode(content));
           }
         }
